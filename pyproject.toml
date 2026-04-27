@@ -1,0 +1,112 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "magic-qc"
+version = "0.1.0"
+description = "自动化质量检测与筛选工具"
+readme = "README.md"
+authors = [
+  {name = "jackson wang", email = "wxd123@users.noreply.github.com"}
+]
+maintainers = [
+  {name = "jackson wang", email = "wxd123@users.noreply.github.com"}
+]
+classifiers = [    
+    "Programming Language :: Python :: 3",
+    "Typing :: Typed",
+]
+license = "MIT"
+dependencies = [
+  "typer",
+  "rich",
+  "dlib>=20.0.1",
+  "opencv-python>=4.13.0.92",
+  "numpy>=2.4.4",
+  "pandas>=3.0.2",
+  "matplotlib>=3.10.8",
+  "scikit-image>=0.26.0",
+  "scipy>=1.17.1",
+  "imageio>=2.37.3",
+  "tifffile>=2026.3.3",
+]
+requires-python = ">= 3.12"
+
+[dependency-groups]
+dev = [
+    { include-group = "lint" },
+    { include-group = "test" },
+    { include-group = "typecheck" },
+    "build>=1.4.4",
+    "pyinstaller>=6.19.0",
+    "twine>=6.2.0",
+]
+lint = [
+    "ruff",
+]
+test = [
+    "coverage",
+    "pytest",
+]
+typecheck = [
+    "ty",
+]
+docs = [
+    "zensical",
+    "mkdocstrings-python",
+]
+
+[project.urls]
+bugs = "https://github.com/wxd123/magic_qc/issues"
+changelog = "https://github.com/wxd123/magic_qc/releases"
+documentation = "https://wxd123.github.io/magic_qc/"
+homepage = "https://github.com/wxd123/magic_qc"
+
+[project.scripts]
+magic_qc = "magic_qc.cli:app"
+
+[tool.ty]
+# All rules are enabled as "error" by default; no need to specify unless overriding.
+# Example override: relax a rule for the entire project (uncomment if needed).
+# rules.TY015 = "warn"  # For invalid-argument-type, warn instead of error.
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # Pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = ["src/", "tests/"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 50
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "if typing.TYPE_CHECKING:",
+    "@overload",
+    "@typing.overload",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+    "raise NotImplementedError",
+    "\\.\\.\\.",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.uv]
+package = true
+default-groups = ["dev"]

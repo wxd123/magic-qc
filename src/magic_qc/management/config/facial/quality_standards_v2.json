@@ -1,0 +1,172 @@
+{
+  "version": "2.0.0",
+  "name": "人脸图像质量标准",
+  "description": "基于实际数据优化的质量标准配置",
+  "last_updated": "2026-04-11T10:00:00",
+  
+  "thresholds": {
+    "clarity": {
+      "excellent": 150,
+      "good": 80,
+      "pass": 50,
+      "unit": "拉普拉斯方差",
+      "description": "清晰度越高越好",
+      "higher_is_better": true
+    },
+    "contrast": {
+      "excellent": 60,
+      "good": 45,
+      "pass": 30,
+      "unit": "标准差",
+      "description": "对比度越高越好",
+      "higher_is_better": true
+    },
+    "edge_density": {
+      "excellent": 0.10,
+      "good": 0.06,
+      "pass": 0.03,
+      "unit": "边缘像素比例",
+      "description": "边缘密度越高越好",
+      "higher_is_better": true
+    },
+    "noise_level": {
+      "excellent": 5,
+      "good": 10,
+      "pass": 20,
+      "unit": "噪声估计值",
+      "description": "噪声越低越好",
+      "higher_is_better": false
+    }
+  },
+  
+  "symmetry_thresholds": {
+    "excellent": 0.9,
+    "good": 0.8,
+    "pass": 0.7,
+    "unit": "对称性系数",
+    "description": "对称性越高越好（范围0-1）",
+    "higher_is_better": true
+  },
+  
+  "symmetry_levels": {
+    "excellent": {
+      "min_score": 0.9,
+      "label": "优秀",
+      "icon": "✅",
+      "color": "green",
+      "recommendation": "人脸对称性优秀，姿态端正"
+    },
+    "good": {
+      "min_score": 0.8,
+      "label": "良好",
+      "icon": "👍",
+      "color": "cyan",
+      "recommendation": "人脸对称性良好，轻微偏转可接受"
+    },
+    "pass": {
+      "min_score": 0.7,
+      "label": "合格",
+      "icon": "⚠️",
+      "color": "yellow",
+      "recommendation": "人脸对称性合格，有一定偏转"
+    },
+    "fail": {
+      "min_score": 0,
+      "label": "较差",
+      "icon": "❌",
+      "color": "red",
+      "recommendation": "人脸对称性较差，偏转过大或表情异常"
+    }
+  },
+  
+  "scoring": {
+    "weights": {
+      "clarity": 0.40,
+      "contrast": 0.25,
+      "edge_density": 0.15,
+      "noise_level": 0.20
+    },
+    "score_mapping": {
+      "excellent": 100,
+      "good": 75,
+      "pass": 50,
+      "fail": 25
+    },
+    "pass_threshold": 60,
+    "good_threshold": 80,
+    "excellent_threshold": 85
+  },
+  
+  "quality_levels": {
+    "excellent": {
+        "min_score": 90,
+        "label": "建模优秀",
+        "icon": "✅",
+        "color": "green",
+        "recommendation": "质量优秀，非常适合三维建模"
+    },
+    "good": {
+        "min_score": 80,
+        "label": "建模良好",
+        "icon": "👍",
+        "color": "cyan",
+        "recommendation": "质量良好，可用于三维建模"
+    },
+    "pass": {
+        "min_score": 70,
+        "label": "建模合格",
+        "icon": "⚠️",
+        "color": "yellow",
+        "recommendation": "质量合格，建模可能需要后期处理"
+    },
+    "fail": {
+        "min_score": 0,
+        "label": "不适用",
+        "icon": "❌",
+        "color": "red",
+        "recommendation": "质量较差，不建议用于三维建模"
+    }
+  },
+  
+  "metric_display": {
+    "clarity": {
+      "label": "清晰度",
+      "icon": "🔍",
+      "precision": 1,
+      "unit": "方差"
+    },
+    "contrast": {
+      "label": "对比度",
+      "icon": "🎨",
+      "precision": 1,
+      "unit": "标准差"
+    },
+    "edge_density": {
+      "label": "边缘密度",
+      "icon": "📐",
+      "precision": 4,
+      "unit": "比例"
+    },
+    "noise_level": {
+      "label": "噪声水平",
+      "icon": "📡",
+      "precision": 1,
+      "unit": "估计值"
+    }
+  },
+
+  "lr_ratio": {
+    "excellent": [0.85, 0.95],
+    "good": [0.75, 0.85],
+    "poor": [0, 0.75],
+    "score_mapping": {
+      "excellent": 100,
+      "good": 70,
+      "poor": 40
+    },
+    "weight": 0.10,
+    "description": "左右脸亮度比,越接近1越好"
+  },
+  
+  "analysis_history": []
+}

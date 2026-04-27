@@ -1,0 +1,31 @@
+# 自动生成__init__.py
+uv add pyinitgen --dev
+
+# 查看自动生成文件
+pyinitgen --base-dir ./src/magicm --dry-run
+
+# 生成
+pyinitgen --base-dir ./src/magicm
+
+
+# 生成api接口文档
+
+# 工具安装
+uv add python_docstring_markdown --dev
+
+# 运行命令
+python -m python_docstring_markdown ./src/magicm ./docs/api.md
+
+python -m python_docstring_markdown ./src/magicm/detector/hardware ./docs/api-hardware.md
+
+python -m python_docstring_markdown ./src/magicm/detector/software ./docs/api-software.md
+
+python -m python_docstring_markdown ./src/magicm/detector/management ./docs/api-management.md
+
+python -m python_docstring_markdown ./src/magicm/deploy/enviroment ./docs/api-deploy-enviroment.md
+
+# 安装测试工具
+uv add pytest pytest-cov --dev
+
+# git 代理
+git config --global http.https://github.com.proxy http://127.0.0.1:7897

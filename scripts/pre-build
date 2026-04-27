@@ -1,0 +1,42 @@
+# sync env
+
+# output env
+uv pip freeze > requirements.txt
+
+# install env
+uv pip install -r requirements.txt
+  or
+uv pip install -e .
+
+# Windows environment setup (VS Code terminal)
+
+## 1. Script policy
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+## 2. Create symbolic link for virtual environment (requires admin privileges)
+
+# **Prerequisite**: Open PowerShell as Administrator, then `cd` to your project root folder.
+
+# PowerShell
+New-Item -ItemType SymbolicLink -Path .venv -Target SOURCE-ENV
+
+# Replace SOURCE-ENV with the actual path to your source virtual environment (absolute or relative path).
+
+# Example:
+New-Item -ItemType SymbolicLink -Path .venv -Target D:\shared_envs\base_venv
+
+# Without admin privileges, you'll get: "New-Item : Client does not have the required privilege."
+
+# linux env setting ( vs code )
+# linux soft link
+ln -s SOURCE-ENV .venv
+
+# Replace SOURCE-ENV with the actual path to your source virtual environment (absolute or relative path).
+
+# Example:
+ln -s /opt/envs/base_venv .venv
+
+
+# package
+uv add --dev pyinstaller
+uv run pyinstaller --onefile --name magic_qc src/magic_qc/cli.py

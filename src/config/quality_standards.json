@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "name": "人脸图像质量标准",
+  "description": "基于实际数据优化的质量标准配置",
+  "last_updated": "2026-04-07T15:29:39.513170",
+  "thresholds": {
+    "clarity": {
+      "excellent": 150,
+      "good": 80,
+      "pass": 50,
+      "unit": "拉普拉斯方差",
+      "description": "清晰度越高越好"
+    },
+    "contrast": {
+      "excellent": 60,
+      "good": 45,
+      "pass": 30,
+      "unit": "标准差",
+      "description": "对比度越高越好"
+    },
+    "edge_density": {
+      "excellent": 0.1,
+      "good": 0.06,
+      "pass": 0.03,
+      "unit": "边缘像素比例",
+      "description": "边缘密度越高越好"
+    },
+    "noise_level": {
+      "excellent": 5,
+      "good": 10,
+      "pass": 20,
+      "unit": "噪声估计值",
+      "description": "噪声越低越好",
+      "lower_is_better": true
+    }
+  },
+  "scoring": {
+    "weights": {
+      "clarity": 0.4,
+      "contrast": 0.25,
+      "edge_density": 0.15,
+      "noise_level": 0.2
+    },
+    "pass_score": 60,
+    "good_score": 70,
+    "excellent_score": 85
+  },
+  "quality_levels": {
+    "excellent": {
+      "min_score": 85,
+      "label": "优秀",
+      "recommendation": "图像质量优秀，适合作为人脸识别参考"
+    },
+    "good": {
+      "min_score": 70,
+      "label": "良好",
+      "recommendation": "图像质量良好，可用于人脸识别"
+    },
+    "pass": {
+      "min_score": 60,
+      "label": "合格",
+      "recommendation": "图像质量合格，建议谨慎使用"
+    },
+    "fail": {
+      "min_score": 0,
+      "label": "不合格",
+      "recommendation": "图像质量较差，建议重新采集"
+    }
+  },
+  "analysis_history": []
+}

@@ -1,0 +1,148 @@
+"""
+人脸质控命令行接口 - 子命令组
+"""
+
+import typer
+from pathlib import Path
+from typing import Optional
+
+from magic_qc.business.facial.face_checker import FaceChecker
+from magic_qc.business.facial.symmetry_checker import SymmetryChecker
+from magic_qc.business.facial.quality_checker import FaceQualityChecker
+from magic_qc.interface.facial.display import (
+    print_start_batch, print_start_analysis, print_batch_summary,
+    print_batch_results, print_truncation_notice, print_single_result,
+    print_symmetry_result, print_symmetry_batch_summary,
+    print_symmetry_batch_results, print_no_images, print_error
+)
+from magic_qc.interface.facial.export import (
+    save_batch_results, save_symmetry_batch_results,
+    resolve_output_path
+)
+
+
+app = typer.Typer(help="人脸质控命令", no_args_is_help=True)
+
+
+@app.command(name="check")
+def check_face(
+    input_path: str = typer.Argument(..., help="图片文件或目录路径"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="输出结果文件（使用 -o 不带参数则在输入目录生成 report.csv）"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="显示详细信息"),
+    sort_by_score: bool = typer.Option(True, "--sort/--no-sort", help="按综合评分排序"),
+    descending: bool = typer.Option(True, "--desc/--asc", help="降序排列"),
+    top_n: Optional[int] = typer.Option(None, "--top", "-t", help="只显示前N条"),
+):
+    """完整人脸质控检查（对称性+质量）"""
+    checker = FaceChecker()
+    path = Path(input_path)
+    
+    # 解析输出路径
+    output_path = resolve_output_path(input_path, output, "face_report.csv")
+    
+    if path.is_dir():
+        print_start_batch(input_path)
+        results = checker.batch_check(input_path)
+        
+        if not results:
+            print_no_images()
+            return
+        
+        if sort_by_score:
+            results.sort(key=lambda x: x.get('score', 0), reverse=descending)
+        
+        display_results = results[:top_n] if top_n else results
+        all_scores = [r.get('score', 0) for r in results]
+        summary = checker.get_summary(results)
+        
+        print_batch_summary(summary, all_scores)
+        print_batch_results(display_results, descending, verbose)
+        print_truncation_notice(len(results), len(display_results))
+        
+        if output_path:
+            save_batch_results(results, str(output_path), sort_by_score, descending)
+    else:
+        print_start_analysis(input_path)
+        result = checker.check(input_path)
+        
+        if "error" in result:
+            print_error(result['error'])
+            raise typer.Exit(code=1)
+        
+        print_single_result(result, verbose)
+        
+        if output_path:
+            from magic_qc.interface.facial.export import save_single_result
+            save_single_result(result, str(output_path))
+
+
+@app.command(name="symmetry")
+def check_symmetry(
+    image_path: str = typer.Argument(..., help="图片文件路径"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="输出结果文件"),
+):
+    """仅面部对称性分析"""
+    checker = SymmetryChecker()
+    result = checker.check(image_path)
+    
+    if "error" in result:
+        print_error(result['error'])
+        raise typer.Exit(code=1)
+    
+    print_symmetry_result(result)
+    
+    if output:
+        from magic_qc.interface.facial.export import save_single_result
+        save_single_result(result, output)
+
+
+@app.command(name="batch")
+def batch_symmetry(
+    dir_path: str = typer.Argument(..., help="图片目录路径"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="输出CSV文件"),
+    sort_by_score: bool = typer.Option(True, "--sort/--no-sort", help="按对称性分数排序"),
+    descending: bool = typer.Option(True, "--desc/--asc", help="降序排列"),
+    top_n: Optional[int] = typer.Option(None, "--top", "-t", help="只显示前N条"),
+):
+    """批量对称性分析"""
+    print_start_batch(dir_path)
+    
+    if not Path(dir_path).is_dir():
+        print_error(f"目录不存在: {dir_path}")
+        raise typer.Exit(code=1)
+    
+    checker = SymmetryChecker()
+    results = []
+    
+    for ext in ['*.jpg', '*.jpeg', '*.png', '*.bmp']:
+        for p in Path(dir_path).glob(ext):
+            result = checker.check(str(p))
+            if "error" not in result:
+                results.append(result)
+        for p in Path(dir_path).glob(ext.upper()):
+            result = checker.check(str(p))
+            if "error" not in result:
+                results.append(result)
+    
+    if not results:
+        print_no_images()
+        return
+    
+    if sort_by_score:
+        results.sort(key=lambda x: x.get('overall_symmetry', 0), reverse=descending)
+    
+    display_results = results[:top_n] if top_n else results
+    
+    print_symmetry_batch_summary(results)
+    print_symmetry_batch_results(display_results, descending)
+    
+    if output:
+        save_symmetry_batch_results(results, output, sort_by_score, descending)
+
+
+def main():
+    app()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,4 @@
+uv run pyinstaller --onefile \
+  --add-data "$(uv run python -c 'import cv2; from pathlib import Path; print(Path(cv2.__file__).parent / "data")'):cv2/data" \
+  --add-data "src/magic_qc/management/config/facial/quality_standards_v2.json:magic_qc/management/config/facial" \
+  --name magic_qc src/magic_qc/cli.py
