@@ -10,6 +10,7 @@ __pycache__/
 # .vscode/
 
 # Distribution / packaging
+docs/
 build/
 dist/
 eggs/
